@@ -1,0 +1,45 @@
+.mainSearchPage {
+  .inner {
+    max-width: 680px;
+    margin: 0 auto;
+    .search-bar-collage {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      .image-wrap {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 40px;
+        user-select: none;
+        pointer-events: none;
+        max-width: 350px;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+    .btn-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      gap: 20px;
+      button {
+        background-color: var(--color-glass-bg-dark);
+        border: 1px solid var(--color-glass-border-dark);
+        border-radius: 8px;
+        padding: 12px 24px;
+        box-shadow: 0 4px 6px var(--color-blog-shadow);
+        line-height: 100%;
+        width: 100px;
+        color: var(--color-white);
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+        &:hover {
+          background-color: var(--color-glass-bg);
+        }
+    }
+    }
+  }
+}

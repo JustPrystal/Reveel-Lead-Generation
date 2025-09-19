@@ -1,0 +1,46 @@
+@use "sass:map";
+@use 'vars' as vars;
+
+@mixin transition($args...) {
+    -webkit-transition: $args;
+    -moz-transition: $args;
+    -ms-transition: $args;
+    -o-transition: $args;
+    transition: $args;
+  }
+
+@mixin center(){
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+}
+
+@mixin keyframes($animation-name) {
+  @-webkit-keyframes #{$animation-name} {
+      @content;
+  }
+
+  @keyframes #{$animation-name} {
+      @content;
+  }
+}
+
+@mixin responsive($breakpoint) { 
+  @if map.has-key(vars.$custom-breakpoints, $breakpoint) {
+      @media (max-width: #{map.get(map.get(vars.$custom-breakpoints, $breakpoint), maxSize)}) {
+        @content;
+      }
+  }
+  @else {
+      @warn "Breakpoint `#{$breakpoint}` does not exist. Check case sensitivity.";
+  }
+}
+
+@mixin placeholder {
+  &::-webkit-input-placeholder {@content}
+  &:-moz-placeholder           {@content}
+  &::-moz-placeholder          {@content}
+  &:-ms-input-placeholder      {@content}  
+}
+

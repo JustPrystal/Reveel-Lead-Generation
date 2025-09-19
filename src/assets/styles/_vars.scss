@@ -1,0 +1,55 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+$custom-breakpoints: (
+  xs: (
+    minSize: 0px,
+    maxSize: 575px,
+    name: "XS",
+  ),
+  sm: (
+    minSize: 576px,
+    maxSize: 767px,
+    name: "SM",
+  ),
+  md: (
+    minSize: 768px,
+    maxSize: 991px,
+    name: "MD",
+  ),
+  lg: (
+    minSize: 992px,
+    maxSize: 1279px,
+    name: "LG",
+  ),
+  xl: (
+    minSize: 1280px,
+    maxSize: 1499px,
+    name: "XL",
+  ),
+  xxl: (
+    minSize: 1500px,
+    maxSize: 0px,
+    name: "XXL",
+  ),
+  xxxl: (
+    minSize: 1599px,
+    maxSize: 2000px,
+    name: "XXL",
+  ),
+);
+
+:root {
+  --color-black: #000;
+  --color-white: #fff;
+  --color-main: #990000;
+  --color-main-light: #861d1d;
+  --color-red-glow: rgba(255, 0, 0, 0.7);
+  --color-glass-bg: rgba(255, 255, 255, 0.1);
+  --color-glass-border: rgba(255, 255, 255, 0.5);
+  --color-blog-shadow: rgba(0, 0, 0, 0.3);
+  --color-glass-bg-dark: rgba(40, 40, 40, 0.4);
+  --color-glass-border-dark: rgba(255, 255, 255, 0.2);
+
+  --font-inter: 'Inter', sans-serif;
+
+}
