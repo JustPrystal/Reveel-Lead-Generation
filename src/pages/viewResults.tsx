@@ -1,65 +1,61 @@
 import { useEffect, useState } from "react";
+import { NavLink, useSearchParams } from "react-router-dom";
 import logo from "../assets/images/logo.png";
 import SearchBar from "../components/search-bar";
-import { handleSearch as handleSearchUtil } from "../utils/handleSearch";
-import type { Result } from "../types/globalTypes";
 import VideoGrid from "../components/video-grid";
 import GlobalLoader from "../components/global-loader";
-import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import Tracker from "../components/tracker";
+import { handleSearch as handleSearchUtil } from "../utils/handleSearch";
+import { globalCache } from "../utils/globalCache";
+import type { Result } from "../types/globalTypes";
 
 export default function ViewResults() {
-  const [input, setInput] = useState<string>("");
-  const [results, setResults] = useState<Result>({
+  const [searchResults, setSearchResults] = useState<Result>({
     videos: [],
     nextPageToken: "",
   });
-  const [loading, setLoading] = useState<boolean>(false);
-  const [page, setPage] = useState<string>("");
-  const [pageTokens, setPageTokens] = useState<string[]>([""]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [paginationStack, setPaginationStack] = useState<string[]>([""]);
 
-  const [searchParams] = useSearchParams();
-  const query = searchParams.get("query") || "";
-
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (query) {
-      setPage("");
-      setPageTokens([""]);
-      handleSearchUtil(query, setLoading, setResults, page);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchQuery = searchParams.get("query") || "";
+  const currentPageToken = paginationStack[paginationStack.length - 1];
+  const nextPageToken = searchResults?.nextPageToken || "";
 
   useEffect(() => {
-    if (query) {
-      handleSearchUtil(query, setLoading, setResults, page);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+    if (!searchQuery) return;
 
-  const nextPageToken = results?.nextPageToken || "";
+    const cacheKey = `${searchQuery}_${currentPageToken}`;
 
-  const handleNext = () => {
-    if (nextPageToken) {
-      setPageTokens([...pageTokens, nextPageToken]);
-      setPage(nextPageToken);
+    if (globalCache.has(cacheKey)) {
+      const cachedResult = globalCache.get(cacheKey);
+      if (cachedResult) {
+        setSearchResults(cachedResult);
+        return;
+      }
     }
-  };
 
-  const handlePrev = () => {
-    if (pageTokens.length > 1) {
-      const newTokens = pageTokens.slice(0, -1);
-      setPageTokens(newTokens);
-      setPage(newTokens[newTokens.length - 1] || "");
-    }
-  };
+    setIsLoading(true);
+    handleSearchUtil(
+      searchQuery,
+      setIsLoading,
+      (data: Result) => {
+        setSearchResults(data);
+        globalCache.set(cacheKey, data);
+      },
+      currentPageToken
+    );
+  }, [searchQuery, currentPageToken]);
+
+  // Reset pagination when query changes
+  useEffect(() => {
+    setPaginationStack([""]);
+  }, [searchQuery]);
 
   return (
     <>
-      {query && loading && <GlobalLoader loading={loading} />}
-      {!loading && (
+      {searchQuery && isLoading && <GlobalLoader loading={isLoading} />}
+      {!isLoading && (
         <div className="view-results-page">
           <div className="main-view">
             <div className="top-bar">
@@ -69,15 +65,20 @@ export default function ViewResults() {
               <SearchBar
                 handleSearch={(e) => {
                   e.preventDefault();
-                  navigate(`/search?query=${encodeURIComponent(query.trim())}`);
+                  if (searchQuery.trim()) {
+                    setSearchParams({ query: searchQuery.trim() });
+                  }
                 }}
-                query={input}
-                setQuery={setInput}
-                small={true}
+                query={searchQuery}
+                setQuery={() => {}} // noop since URL drives query now
+                small
               />
             </div>
             <div className="cards-grid" style={{ position: "relative" }}>
-              <VideoGrid results={results.videos || []} loading={loading} />
+              <VideoGrid
+                results={searchResults.videos || []}
+                loading={isLoading}
+              />
             </div>
           </div>
           <div className="side-bar">
@@ -85,15 +86,17 @@ export default function ViewResults() {
             <div className="btn-wrap">
               <button
                 className="next btn"
-                onClick={handleNext}
+                onClick={() =>
+                  setPaginationStack((prev) => [...prev, nextPageToken])
+                }
                 disabled={!nextPageToken}
               >
                 Next
               </button>
               <button
                 className="prev btn"
-                onClick={handlePrev}
-                disabled={pageTokens.length <= 1}
+                onClick={() => setPaginationStack((prev) => prev.slice(0, -1))}
+                disabled={paginationStack.length <= 1}
               >
                 Previous
               </button>

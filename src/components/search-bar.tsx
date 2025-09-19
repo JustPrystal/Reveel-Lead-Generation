@@ -1,4 +1,4 @@
-export default function SearchBar({
+export default function  SearchBar({
   handleSearch,
   query,
   setQuery,
