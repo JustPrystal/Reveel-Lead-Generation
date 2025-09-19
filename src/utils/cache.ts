@@ -1,29 +1,33 @@
-// utils/cache.ts
-type CacheStore<T> = Map<string, T>;
+type CacheStore<T> = Map<string, { value: T; expiry: number }>;
 
 class Cache<T> {
   private store: CacheStore<T>;
-
-  constructor() {
+  private ttl: number;
+  constructor(ttl: number = 2 * 60 * 1000) {
     this.store = new Map();
+    this.ttl = ttl;
   }
-
   private makeKey(key: string) {
     return key.trim().toLowerCase();
   }
-
   get(key: string): T | undefined {
-    return this.store.get(this.makeKey(key));
+    const entry = this.store.get(this.makeKey(key));
+    if (!entry) return undefined;
+    if (Date.now() > entry.expiry) {
+      this.store.delete(this.makeKey(key));
+      return undefined;
+    }
+    return entry.value;
   }
-
   set(key: string, value: T) {
-    this.store.set(this.makeKey(key), value);
+    this.store.set(this.makeKey(key), {
+      value,
+      expiry: Date.now() + this.ttl,
+    });
   }
-
   has(key: string): boolean {
-    return this.store.has(this.makeKey(key));
+    return this.get(key) !== undefined;
   }
-
   clear() {
     this.store.clear();
   }
