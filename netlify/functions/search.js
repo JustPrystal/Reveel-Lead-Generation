@@ -63,22 +63,8 @@ async function scrapeYouTube(keyword, seenIds = [], pageToken = "") {
       thumbnail: item.snippet.thumbnails.high.url,
       source: "YouTube",
       email: null,
-      saved: savedLinks.includes(item.videoId),
+      saved: savedLinks.includes(`https://www.youtube.com/watch?v=${item.id.videoId}`),
     }));
-
-  while (filteredVideos.length < 21) {
-    filteredVideos.push({
-      title: "No more results",
-      link: null,
-      videoId: null,
-      channel_link: null,
-      channel_name: null,
-      thumbnail: null,
-      source: "YouTube",
-      email: null,
-      error: "No more results available",
-    });
-  }
 
   return { videos: filteredVideos, nextPageToken: data.nextPageToken || null };
 }

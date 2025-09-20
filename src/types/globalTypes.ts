@@ -7,6 +7,7 @@ interface Video {
   channel_link?: string;
   thumbnail?: string;
   channel_name?: string;
+  videoId?: string;
   saved?: boolean;
 }
 

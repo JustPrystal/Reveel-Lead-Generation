@@ -139,7 +139,7 @@ html {
   border: 1px solid rgba(255, 255, 255, 0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   font-family: var(--font-inter);
-  &.error{
+  &.error {
     border: 2px solid var(--color-main);
   }
   &:hover {
@@ -148,6 +148,21 @@ html {
 
     .overlay {
       opacity: 1;
+    }
+  }
+  &.saved {
+    border: 2px solid #22c55e;
+    .overlay {
+      background: linear-gradient(
+        to top,
+        rgba(34, 197, 94, 0.3) 0%,
+        rgba(34, 197, 94, 0.1) 70%,
+        transparent 100%
+      );
+      .save-btn {
+        display: none;
+        pointer-events: none;
+      }
     }
   }
 
@@ -171,7 +186,7 @@ html {
       font-weight: bold;
       color: #fff;
       margin: 0 0 6px;
-      a{
+      a {
         color: white;
         text-decoration: none;
         all: inherit;
@@ -208,7 +223,7 @@ html {
         }
       }
     }
-    .save-btn{
+    .save-btn {
       position: absolute;
       width: 32px;
       height: 32px;
@@ -216,9 +231,9 @@ html {
       right: 10px;
       z-index: 9999;
       cursor: pointer;
-      svg{
-        g{
-          path{
+      svg {
+        g {
+          path {
             fill: var(--color-white);
           }
         }

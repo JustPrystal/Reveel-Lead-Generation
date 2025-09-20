@@ -15,6 +15,7 @@ export default function ViewResults() {
     nextPageToken: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [cacheRefreshing, setCacheRefreshing] = useState(false); // 👈 new
   const [paginationStack, setPaginationStack] = useState<string[]>([""]);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -22,10 +23,10 @@ export default function ViewResults() {
   const currentPageToken = paginationStack[paginationStack.length - 1];
   const nextPageToken = searchResults?.nextPageToken || "";
 
+  const cacheKey = `${searchQuery}_${currentPageToken}`;
+
   useEffect(() => {
     if (!searchQuery) return;
-
-    const cacheKey = `${searchQuery}_${currentPageToken}`;
 
     if (globalCache.has(cacheKey)) {
       const cachedResult = globalCache.get(cacheKey);
@@ -70,14 +71,16 @@ export default function ViewResults() {
                   }
                 }}
                 query={searchQuery}
-                setQuery={() => {}} // noop since URL drives query now
+                setQuery={() => {}}
                 small
               />
             </div>
             <div className="cards-grid" style={{ position: "relative" }}>
               <VideoGrid
                 results={searchResults.videos || []}
-                loading={isLoading}
+                loading={isLoading || cacheRefreshing} // 👈 merged
+                cacheKey={cacheKey}
+                setCacheRefreshing={setCacheRefreshing} // 👈 passed
               />
             </div>
           </div>
